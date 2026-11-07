@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Fountain Bottle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Noto+Serif+Thai:wght@400;600&display=swap">
+<style>
+/* Layout: full-bleed cathedral 3D stage, poster-style panels pinned to its corners; stacks into one column on phones. Single dark look by design. */
+:root {
+  --night: #070a1c;
+  --panel: rgba(9, 14, 44, 0.84);
+  --gold: #e6bc6a;
+  --gold-dim: #9c7637;
+  --ink: #f4ecd9;
+  --ink-soft: #c9c2b4;
+  --ice: #9fe2ff;
+  --f-display: "Cinzel Decorative", "Noto Serif Thai", Georgia, serif;
+  --f-head: "Cinzel", "Noto Serif Thai", Georgia, serif;
+  --f-body: "Cormorant Garamond", "Noto Serif Thai", Georgia, serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--night); color: var(--ink); font-family: var(--f-body); font-size: 17px; overflow-x: hidden; }
+
+.stage { position: relative; height: 100%; min-height: 640px; overflow: hidden; }
+.view { position: absolute; inset: 0; z-index: 0; }
+.view canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.view canvas:active { cursor: grabbing; }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-soft); font-family: var(--f-head); letter-spacing: .1em; font-size: 14px; }
+
+.brand, .info, .msg { position: absolute; z-index: 1; }
+.brand { top: 28px; left: max(28px, env(safe-area-inset-left, 0px)); width: min(360px, 32vw); text-align: center; pointer-events: none; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 700; font-size: clamp(40px, 4.6vw, 64px); line-height: .98; color: var(--gold); text-wrap: balance;
+  text-shadow: 0 0 18px rgba(230, 188, 106, .35), 0 2px 0 #4a3412; }
+.brand p { margin: 12px 0 0; font-style: italic; font-size: clamp(20px, 1.9vw, 26px); color: var(--ink); }
+.orn { display: block; margin: 10px auto 0; color: var(--gold); font-size: 14px; letter-spacing: .6em; }
+
+.info { top: 28px; right: max(28px, env(safe-area-inset-right, 0px)); width: 300px; display: flex; flex-direction: column; gap: 14px; }
+.panel { background: var(--panel); border: 1px solid var(--gold-dim); outline: 1px solid rgba(230, 188, 106, .25); outline-offset: -6px; padding: 18px 20px; backdrop-filter: blur(4px); }
+.panel h2 { margin: 0 0 12px; font-family: var(--f-head); font-weight: 600; font-size: 21px; color: var(--gold); text-align: center; letter-spacing: .04em; }
+.steps, .perks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.steps li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; line-height: 1.3; }
+.steps b { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--gold); color: #2a1d08; font-family: var(--f-head); font-size: 15px; }
+.perks li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: center; line-height: 1.3; }
+.perks i { font-style: normal; color: var(--ice); text-align: center; }
+
+.msg { right: max(28px, env(safe-area-inset-right, 0px)); bottom: 24px; width: 300px; display: flex; flex-direction: column; gap: 12px; }
+.banner { text-align: center; pointer-events: none; }
+.banner q { quotes: none; display: block; font-family: var(--f-display); font-size: clamp(26px, 2.6vw, 36px); line-height: 1.08; color: var(--gold); text-wrap: balance; overflow-wrap: anywhere;
+  text-shadow: 0 0 16px rgba(230, 188, 106, .4), 0 2px 0 #4a3412; transition: opacity .35s; }
+.banner q.fade { opacity: 0; }
+.dims { margin-top: 8px; font-family: var(--f-head); font-size: 14px; color: var(--ink-soft); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.xray { display: flex; flex-direction: column; gap: 10px; }
+.xbtn { display: flex; align-items: center; justify-content: center; gap: 8px; background: transparent; border: 1px solid var(--ice); color: var(--ice);
+  font: 600 15px var(--f-head); letter-spacing: .05em; padding: 10px 14px; cursor: pointer; transition: background .2s, color .2s; }
+.xbtn:hover { background: rgba(159, 226, 255, .12); }
+.xbtn[aria-pressed="true"] { background: var(--ice); color: #06142c; }
+.xbtn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.xnote { margin: 0; font-size: 15px; line-height: 1.35; color: var(--ink-soft); }
+.xnote b { color: var(--ice); font-weight: 600; }
+.hint { margin: 0; font-size: 14px; color: var(--ink-soft); font-style: italic; }
+
+@media (max-width: 860px) {
+  .stage { height: auto; min-height: 0; display: flex; flex-direction: column; gap: 18px; padding-block: 20px 28px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .brand, .info, .msg, .view { position: relative; inset: auto; top: auto; left: auto; right: auto; bottom: auto; width: auto; }
+  .brand { order: 1; }
+  .view { order: 2; height: 470px; margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); }
+  .msg { order: 3; }
+  .info { order: 4; }
+}
+@media (prefers-reduced-motion: reduce) { .xbtn { transition: none; } }
+</style>
+
+<main class="stage">
+  <div class="view" id="view">
+    <div class="loading" id="loading">Opening the portal…</div>
+  </div>
+
+  <header class="brand">
+    <h1>Fountain<br>Bottle</h1>
+    <span class="orn">✦ ✦ ✦</span>
+    <p>Drink more. Anytime.</p>
+  </header>
+
+  <aside class="info">
+    <section class="panel">
+      <h2>How It Works</h2>
+      <ol class="steps">
+        <li><b>1</b><span>Fill once. The portal does the rest.</span></li>
+        <li><b>2</b><span>Turn the rune dial to open the portal.</span></li>
+        <li><b>3</b><span>Glacier water from the Elven Mountains shoots up like a fountain.</span></li>
+      </ol>
+    </section>
+    <section class="panel">
+      <h2>Benefits</h2>
+      <ul class="perks">
+        <li><i>❄</i><span>Never needs refilling</span></li>
+        <li><i>▲</i><span>Always ice-cold, about 2 °C</span></li>
+        <li><i>✦</i><span>Perfect for school, sports, or daily life</span></li>
+      </ul>
+    </section>
+  </aside>
+
+  <section class="msg">
+    <div class="banner">
+      <q id="banner">Small Bottle, Big Magic!</q>
+      <div class="dims">25 cm tall · 12 cm wide</div>
+    </div>
+    <div class="xray panel">
+      <button class="xbtn" id="xrayBtn" type="button" aria-pressed="false">✦ เปิดโหมด X-ray</button>
+      <p class="xnote" id="xrayNote">ส่องทะลุกระจกสีเพื่อดู<b>ประตูมิติ</b>ที่ซ่อนอยู่ก้นขวด</p>
+      <p class="hint">ลากเพื่อหมุนขวด · เลื่อนลูกกลิ้งเพื่อซูม</p>
+    </div>
+  </section>
+</main>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const view = document.getElementById('view');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const H = 2.5; // 25 cm, 1 unit = 10 cm
+
+// ---------- procedural textures ----------
+function rng(seed) {
+  return () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const PALETTE = [[225, 25, 40], [255, 118, 12], [255, 200, 40], [40, 165, 60], [20, 170, 215],
+                 [25, 60, 225], [118, 30, 200], [220, 30, 130], [20, 110, 255], [255, 85, 55]];
+
+function stainedTexture(w, h, cell, seed, lead) {
+  const r = rng(seed), gx = w / cell, gy = Math.ceil(h / cell);
+  const px = new Float32Array(gx * gy), py = new Float32Array(gx * gy), col = new Uint8Array(gx * gy);
+  for (let j = 0; j < gy; j++) for (let i = 0; i < gx; i++) {
+    const k = j * gx + i;
+    px[k] = (i + 0.15 + 0.7 * r()) * cell;
+    py[k] = (j + 0.15 + 0.7 * r()) * cell;
+    col[k] = Math.floor(r() * PALETTE.length);
+  }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'), img = ctx.createImageData(w, h), d = img.data;
+  for (let y = 0; y < h; y++) {
+    const cy = Math.floor(y / cell);
+    for (let x = 0; x < w; x++) {
+      const cx = Math.floor(x / cell);
+      let d1 = 1e9, d2 = 1e9, best = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        const j = cy + dy; if (j < 0 || j >= gy) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          let i = cx + dx, off = 0;
+          if (i < 0) { i += gx; off = -w; } else if (i >= gx) { i -= gx; off = w; }
+          const k = j * gx + i, ex = px[k] + off - x, ey = py[k] - y, dd = ex * ex + ey * ey;
+          if (dd < d1) { d2 = d1; d1 = dd; best = k; } else if (dd < d2) d2 = dd;
+        }
+      }
+      const s1 = Math.sqrt(d1), s2 = Math.sqrt(d2), p = (y * w + x) * 4;
+      if (s2 - s1 < lead) { d[p] = 74; d[p + 1] = 54; d[p + 2] = 24; }
+      else {
+        const pc = PALETTE[col[best]];
+        const sh = 1.2 - 0.6 * Math.min(1, s1 / cell) + (((x * 7 + y * 13) % 5) - 2) * 0.012;
+        d[p] = Math.min(255, pc[0] * sh); d[p + 1] = Math.min(255, pc[1] * sh); d[p + 2] = Math.min(255, pc[2] * sh);
+      }
+      d[p + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 8;
+  return t;
+}
+
+function marbleTexture() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 256;
+  const ctx = c.getContext('2d'), r = rng(7);
+  ctx.fillStyle = '#ebe6de'; ctx.fillRect(0, 0, 1024, 256);
+  for (let v = 0; v < 46; v++) {
+    ctx.strokeStyle = `rgba(${80 + r() * 40},${76 + r() * 30},${86 + r() * 30},${0.15 + r() * 0.45})`;
+    ctx.lineWidth = 0.4 + r() * 2.2;
+    ctx.beginPath();
+    let x = r() * 1024, y = r() * 256;
+    ctx.moveTo(x, y);
+    for (let s = 0; s < 18; s++) { x += 10 + r() * 40; y += (r() - 0.5) * 50; ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+}
+
+function runeTexture() {
+  const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
+  const ctx = c.getContext('2d'), r = rng(42), m = S / 2;
+  const g = ctx.createRadialGradient(m, m, 0, m, m, m);
+  g.addColorStop(0, 'rgba(160,230,255,0.95)'); g.addColorStop(0.35, 'rgba(40,140,255,0.55)'); g.addColorStop(1, 'rgba(0,40,120,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+  ctx.strokeStyle = 'rgba(200,245,255,0.95)'; ctx.lineWidth = 3;
+  for (const rad of [0.93, 0.8, 0.52]) { ctx.beginPath(); ctx.arc(m, m, rad * m, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.lineWidth = 2.5;
+  for (let k = 0; k < 28; k++) {
+    const a = (k / 28) * Math.PI * 2, rr = 0.865 * m;
+    ctx.save(); ctx.translate(m + Math.cos(a) * rr, m + Math.sin(a) * rr); ctx.rotate(a + Math.PI / 2);
+    ctx.beginPath();
+    for (let s = 0; s < 3; s++) { ctx.moveTo((r() - 0.5) * 18, (r() - 0.5) * 18); ctx.lineTo((r() - 0.5) * 18, (r() - 0.5) * 18); }
+    ctx.stroke(); ctx.restore();
+  }
+  for (let k = 0; k < 8; k++) {
+    const a = (k / 8) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(m + Math.cos(a) * 0.52 * m, m + Math.sin(a) * 0.52 * m);
+    ctx.lineTo(m + Math.cos(a + Math.PI * 0.75) * 0.52 * m, m + Math.sin(a + Math.PI * 0.75) * 0.52 * m); ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+function glowSprite() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const ctx = c.getContext('2d'), g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.3, 'rgba(200,240,255,0.8)'); g.addColorStop(1, 'rgba(120,200,255,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+
+// ---------- renderer / scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+view.appendChild(renderer.domElement);
+document.getElementById('loading').remove();
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x070a1c);
+scene.fog = new THREE.Fog(0x070a1c, 12, 26);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+camera.position.set(0, 1.9, 8.2);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.35, 0);
+controls.enableDamping = true;
+controls.enablePan = false;
+controls.minDistance = 4; controls.maxDistance = 13;
+controls.minPolarAngle = 0.6; controls.maxPolarAngle = 1.62;
+controls.autoRotate = !reduceMotion;
+controls.autoRotateSpeed = 0.6;
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.4, 0.88);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- materials ----------
+const gold = new THREE.MeshStandardMaterial({ color: 0xd9a64e, metalness: 1, roughness: 0.3, emissive: 0x2a1a05, envMapIntensity: 0.8 });
+const starGold = new THREE.MeshStandardMaterial({ color: 0xffc860, metalness: 0.9, roughness: 0.2, emissive: 0xffa630, emissiveIntensity: 1.2, envMapIntensity: 0.8 });
+
+// ---------- bottle ----------
+const PROFILE = [[0.40, 0.0], [0.45, 0.1], [0.54, 0.6], [0.60, 1.15], [0.56, 1.55],
+                 [0.38, 1.9], [0.25, 2.15], [0.26, 2.35], [0.34, 2.5]];
+const curve = new THREE.SplineCurve(PROFILE.map(([r, y]) => new THREE.Vector2(r, y)));
+const pts = curve.getSpacedPoints(90);
+const radiusAt = (y) => { let best = pts[0]; for (const p of pts) if (Math.abs(p.y - y) < Math.abs(best.y - y)) best = p; return best.x; };
+
+const glassTex = stainedTexture(1024, 640, 64, 11, 3.2);
+glassTex.repeat.set(1, 1);
+const glassMat = new THREE.MeshPhysicalMaterial({
+  map: glassTex, emissiveMap: glassTex, emissive: 0xffffff, emissiveIntensity: 0.45,
+  roughness: 0.18, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.1, envMapIntensity: 0.5,
+  transparent: true, opacity: 0.94, side: THREE.DoubleSide
+});
+const bottle = new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(0.001, 0), ...pts], 128), glassMat);
+const bottleGroup = new THREE.Group();
+bottleGroup.add(bottle);
+scene.add(bottleGroup);
+
+// gothic gold ribs + rings
+const RIBS = 12;
+for (let k = 0; k < RIBS; k++) {
+  const a = (k / RIBS) * Math.PI * 2;
+  const path = new THREE.CatmullRomCurve3(pts.filter((_, i) => i % 3 === 0).concat(pts[pts.length - 1])
+    .map(p => new THREE.Vector3((p.x + 0.018) * Math.cos(a), p.y, (p.x + 0.018) * Math.sin(a))));
+  bottleGroup.add(new THREE.Mesh(new THREE.TubeGeometry(path, 90, 0.016, 6), gold));
+}
+for (const y of [0.04, 0.6, 1.2, 1.75, 2.05, 2.49]) {
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(radiusAt(y) + 0.02, y === 2.05 || y === 2.49 ? 0.03 : 0.02, 10, 128), gold);
+  ring.rotation.x = Math.PI / 2; ring.position.y = y;
+  bottleGroup.add(ring);
+}
+
+// eight-point star on the front
+function starShape(n = 8, rOut = 0.3, rIn = 0.065) {
+  const s = new THREE.Shape();
+  for (let k = 0; k <= n * 2; k++) {
+    const a = Math.PI / 2 + (k * Math.PI) / n;
+    const rr = k % 2 ? rIn : ((k / 2) % 2 ? rOut * 0.55 : rOut);
+    const x = rr * Math.cos(a), y = rr * Math.sin(a);
+    k === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+  }
+  return s;
+}
+const star = new THREE.Mesh(new THREE.ExtrudeGeometry(starShape(), { depth: 0.03, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 2 }), starGold);
+star.position.set(0, 1.22, radiusAt(1.22) + 0.03);
+bottleGroup.add(star);
+
+// portal + water column
+const portal = new THREE.Mesh(new THREE.CircleGeometry(0.37, 64),
+  new THREE.MeshBasicMaterial({ map: runeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: 0xbfefff }));
+portal.rotation.x = -Math.PI / 2; portal.position.y = 0.05;
+bottleGroup.add(portal);
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.04, 2.45, 16, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0xd8f6ff }));
+beam.position.y = 1.27; bottleGroup.add(beam);
+const beamGlow = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 2.45, 24, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0x4ab8ff, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false }));
+beamGlow.position.y = 1.27; bottleGroup.add(beamGlow);
+
+// ---------- pedestal / floor ----------
+const marble = new THREE.MeshStandardMaterial({ map: marbleTexture(), color: 0xb8b1a8, roughness: 0.3, metalness: 0.0, envMapIntensity: 0.25, transparent: true });
+const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.06, 0.6, 128), marble);
+ped.position.y = -0.3; scene.add(ped);
+for (const [y, r] of [[0, 1.0], [-0.6, 1.06]]) {
+  const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.032, 10, 128), gold);
+  t.rotation.x = Math.PI / 2; t.position.y = y; scene.add(t);
+}
+const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64),
+  new THREE.MeshStandardMaterial({ color: 0x120e1a, roughness: 0.55, metalness: 0.1, envMapIntensity: 0.12 }));
+floor.rotation.x = -Math.PI / 2; floor.position.y = -0.6; scene.add(floor);
+
+// ---------- cathedral windows ----------
+const winTex = stainedTexture(512, 1024, 48, 99, 4);
+function archShape(w, h) {
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2, 0); s.lineTo(-w / 2, h);
+  s.absarc(0, h, w / 2, Math.PI, 0, true);
+  s.lineTo(w / 2, 0); s.lineTo(-w / 2, 0);
+  return s;
+}
+for (const x of [-5.4, -2.9, 2.9, 5.4]) {
+  const t = winTex.clone(); t.needsUpdate = true; t.repeat.set(1 / 1.8, 1 / 5.8); t.offset.set(x * 0.13, 0);
+  const win = new THREE.Mesh(new THREE.ShapeGeometry(archShape(1.6, 4.4), 24),
+    new THREE.MeshBasicMaterial({ map: t, color: 0xb8b8b8 }));
+  win.position.set(x, 0.4, -7.5); scene.add(win);
+  const frame = new THREE.Mesh(new THREE.ShapeGeometry(archShape(1.9, 4.4), 24), new THREE.MeshStandardMaterial({ color: 0x1a1522, roughness: 0.9 }));
+  frame.position.set(x, 0.3, -7.55); scene.add(frame);
+}
+const roseTex = stainedTexture(512, 512, 40, 5, 4);
+const rose = new THREE.Mesh(new THREE.CircleGeometry(2.0, 64), new THREE.MeshBasicMaterial({ map: roseTex, color: 0xc8c8c8 }));
+rose.position.set(0, 6.3, -8); scene.add(rose);
+const roseRing = new THREE.Mesh(new THREE.TorusGeometry(2.05, 0.1, 8, 96), gold);
+roseRing.position.copy(rose.position); scene.add(roseRing);
+
+// ---------- lights ----------
+scene.add(new THREE.AmbientLight(0x404a80, 0.35));
+const key = new THREE.DirectionalLight(0xffdcae, 1.1); key.position.set(-3, 6, 4); scene.add(key);
+const inner = new THREE.PointLight(0x5cc8ff, 9, 4.5); inner.position.set(0, 0.5, 0); scene.add(inner);
+const spray = new THREE.PointLight(0x9fe2ff, 6, 5); spray.position.set(0, 3.2, 0); scene.add(spray);
+const rimA = new THREE.PointLight(0xff4fa8, 14, 12); rimA.position.set(-4, 3, -4); scene.add(rimA);
+const rimB = new THREE.PointLight(0x3f7bff, 14, 12); rimB.position.set(4, 3, -4); scene.add(rimB);
+
+// ---------- fountain particles ----------
+const N = 3200, sprite = glowSprite();
+const pos = new Float32Array(N * 3), vel = new Float32Array(N * 3), age = new Float32Array(N), life = new Float32Array(N);
+const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+let boost = 0;
+function spawn(i) {
+  const a = Math.random() * Math.PI * 2, rr = Math.random() * 0.1;
+  pos[i * 3] = Math.cos(a) * rr; pos[i * 3 + 1] = H; pos[i * 3 + 2] = Math.sin(a) * rr;
+  const up = (4.0 + Math.random() * 1.3) * (1 + boost * 0.35);
+  vel[i * 3] = gauss() * 0.75; vel[i * 3 + 1] = up; vel[i * 3 + 2] = gauss() * 0.75;
+  age[i] = 0; life[i] = 1.0 + Math.random() * 0.7;
+}
+for (let i = 0; i < N; i++) { spawn(i); age[i] = -Math.random() * 1.6; pos[i * 3 + 1] = -100; }
+const fGeo = new THREE.BufferGeometry();
+fGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+const fountain = new THREE.Points(fGeo, new THREE.PointsMaterial({
+  map: sprite, size: 0.06, color: 0x8fd4ff, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending
+}));
+scene.add(fountain);
+
+// floating gold dust
+const D = 450, dPos = new Float32Array(D * 3);
+for (let i = 0; i < D; i++) { dPos[i * 3] = (Math.random() - 0.5) * 12; dPos[i * 3 + 1] = Math.random() * 7; dPos[i * 3 + 2] = (Math.random() - 0.5) * 10 - 1; }
+const dGeo = new THREE.BufferGeometry(); dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+const dust = new THREE.Points(dGeo, new THREE.PointsMaterial({ map: sprite, size: 0.05, color: 0xffd58a, transparent: true, opacity: 0.6, depthWrite: false, blending: THREE.AdditiveBlending }));
+scene.add(dust);
+
+// ---------- X-ray: the portal hidden at the bottom ----------
+const xray = new THREE.Group();
+xray.visible = false;
+scene.add(xray);
+const glowMat = (color, opacity, map) => {
+  const m = new THREE.MeshBasicMaterial({ color, map: map || null, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  m.userData.base = opacity;
+  return m;
+};
+// vortex rings spiralling down into the pedestal
+const vortex = [];
+for (let k = 0; k < 7; k++) {
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34 - k * 0.042, 0.009, 8, 96), glowMat(0x7fd8ff, 0.95 - k * 0.08));
+  ring.rotation.x = Math.PI / 2;
+  ring.position.y = 0.04 - k * 0.085;
+  xray.add(ring); vortex.push(ring);
+}
+// ice tunnel
+const tunnel = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.06, 0.58, 48, 1, true), glowMat(0x5ab8ff, 0.55, runeTexture()));
+tunnel.position.y = -0.27;
+xray.add(tunnel);
+// the far side: a glacier light at the end of the tunnel
+const farSide = new THREE.Mesh(new THREE.CircleGeometry(0.09, 32), glowMat(0xeaf8ff, 1));
+farSide.rotation.x = -Math.PI / 2; farSide.position.y = -0.55;
+xray.add(farSide);
+// water spiralling up inside the bottle
+const S = 320, sPos = new Float32Array(S * 3), sAng = new Float32Array(S), sY = new Float32Array(S);
+for (let i = 0; i < S; i++) { sAng[i] = Math.random() * Math.PI * 2; sY[i] = Math.random() * 2.3; }
+const sGeo = new THREE.BufferGeometry();
+sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+const spiralMat = new THREE.PointsMaterial({ map: sprite, size: 0.05, color: 0x9fe2ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+spiralMat.userData.base = 0.9;
+xray.add(new THREE.Points(sGeo, spiralMat));
+
+let xrayOn = false, xrayT = 0;
+const xrayBtn = document.getElementById('xrayBtn');
+const xrayNote = document.getElementById('xrayNote');
+xrayBtn.addEventListener('click', () => {
+  xrayOn = !xrayOn;
+  xrayBtn.setAttribute('aria-pressed', String(xrayOn));
+  xrayBtn.textContent = xrayOn ? '✦ ปิดโหมด X-ray' : '✦ เปิดโหมด X-ray';
+  xrayNote.innerHTML = xrayOn
+    ? 'วงแหวนรูนหมุนเปิด<b>อุโมงค์น้ำแข็ง</b>ลงไปใต้แท่น ปลายทางคือธารน้ำแข็งบนขุนเขาเอลฟ์ น้ำไหลวนขึ้นมาตามขวด'
+    : 'ส่องทะลุกระจกสีเพื่อดู<b>ประตูมิติ</b>ที่ซ่อนอยู่ก้นขวด';
+});
+
+// ---------- resize + loop ----------
+function resize() {
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w, h, false);
+  composer.setSize(w, h);
+  bloom.setSize(w, h);
+  camera.aspect = w / h;
+  camera.position.z = w / h < 0.9 ? 10.5 : 8.2;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(view);
+resize();
+
+const clock = new THREE.Clock();
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.033), t = clock.elapsedTime;
+  boost = Math.max(0, boost - dt * 0.8);
+  for (let i = 0; i < N; i++) {
+    age[i] += dt;
+    if (age[i] < 0) continue;
+    if (age[i] >= life[i] || pos[i * 3 + 1] < 0.02) { spawn(i); continue; }
+    vel[i * 3 + 1] -= 9.8 * dt;
+    pos[i * 3] += vel[i * 3] * dt; pos[i * 3 + 1] += vel[i * 3 + 1] * dt; pos[i * 3 + 2] += vel[i * 3 + 2] * dt;
+  }
+  fGeo.attributes.position.needsUpdate = true;
+  for (let i = 0; i < D; i++) { dPos[i * 3 + 1] += dt * 0.12; if (dPos[i * 3 + 1] > 7) dPos[i * 3 + 1] = 0; }
+  dGeo.attributes.position.needsUpdate = true;
+  portal.rotation.z = t * 0.4;
+
+  // X-ray blend
+  xrayT += ((xrayOn ? 1 : 0) - xrayT) * Math.min(1, dt * 5);
+  glassMat.opacity = 0.94 - 0.8 * xrayT;
+  glassMat.emissiveIntensity = 0.45 - 0.33 * xrayT;
+  glassMat.depthWrite = xrayT < 0.5;
+  marble.opacity = 1 - 0.78 * xrayT;
+  marble.depthWrite = xrayT < 0.5;
+  xray.visible = xrayT > 0.01;
+  if (xray.visible) {
+    xray.traverse(o => { if (o.material && o.material.userData.base !== undefined) o.material.opacity = o.material.userData.base * xrayT; });
+    spiralMat.opacity = spiralMat.userData.base * xrayT;
+    vortex.forEach((r, k) => { r.rotation.z = t * (1.2 + k * 0.35) * (k % 2 ? -1 : 1); r.scale.setScalar(1 + Math.sin(t * 3 + k) * 0.04); });
+    tunnel.rotation.y = -t * 0.8;
+    for (let i = 0; i < S; i++) {
+      sY[i] += dt * 0.55; sAng[i] += dt * 2.2;
+      if (sY[i] > 2.3) sY[i] = 0.05;
+      const rr = radiusAt(sY[i]) * 0.6;
+      sPos[i * 3] = Math.cos(sAng[i] + sY[i] * 3) * rr; sPos[i * 3 + 1] = sY[i]; sPos[i * 3 + 2] = Math.sin(sAng[i] + sY[i] * 3) * rr;
+    }
+    sGeo.attributes.position.needsUpdate = true;
+  }
+  inner.intensity = 8 + Math.sin(t * 3) * 1.5 + boost * 6;
+  beamGlow.material.opacity = 0.2 + Math.sin(t * 5) * 0.04 + boost * 0.1;
+  controls.update();
+  composer.render();
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body></html>

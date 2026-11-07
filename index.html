@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Fountain Bottle Presentation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap">
+<style>
+/* Layout: fixed 1280x720 slide canvas scaled to fit the window; one live 3D model that moves between the slides that show it. Single dark look by design. */
+:root {
+  --night: #070a1c;
+  --panel: #0d1438;
+  --gold: #e6bc6a;
+  --gold-dim: #8f6c33;
+  --ink: #f4ecd9;
+  --ink-soft: #bdb6a8;
+  --ice: #9fe2ff;
+  --f-display: "Cinzel Decorative", Georgia, serif;
+  --f-head: "Cinzel", Georgia, serif;
+  --f-body: "Cormorant Garamond", Georgia, serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--night); color: var(--ink); font-family: var(--f-body); overflow: hidden;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.deck { position: relative; height: 100%; }
+.stage { position: absolute; left: 50%; top: calc(50% - 26px); width: 1280px; height: 720px; transform-origin: center center;
+  background: radial-gradient(120% 90% at 70% 20%, #18205a 0%, #0b1032 45%, #060818 100%);
+  border: 1px solid var(--gold-dim); outline: 1px solid rgba(230, 188, 106, .22); outline-offset: -12px; overflow: hidden; }
+
+.slide { position: absolute; inset: 0; padding: 64px 80px; display: flex; flex-direction: column; gap: 28px;
+  opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility .45s; }
+.slide.active { opacity: 1; visibility: visible; }
+.split { flex: 1; display: grid; grid-template-columns: 1fr 470px; gap: 56px; align-items: center; min-height: 0; }
+.split.flip { grid-template-columns: 470px 1fr; }
+.split > * { min-width: 0; }
+
+.eyebrow { font-family: var(--f-head); font-size: 17px; letter-spacing: .22em; text-transform: uppercase; color: var(--ice); }
+h1, h2 { margin: 0; font-family: var(--f-display); font-weight: 700; color: var(--gold); text-wrap: balance; text-shadow: 0 0 22px rgba(230, 188, 106, .3), 0 2px 0 #3e2b0e; }
+h1 { font-size: 96px; line-height: .95; }
+h2 { font-size: 54px; line-height: 1.05; }
+.lede { margin: 0; font-size: 30px; line-height: 1.3; color: var(--ink); max-width: 30ch; }
+.tag { margin: 0; font-family: var(--f-head); font-size: 30px; color: var(--ink); font-style: normal; }
+.muted { color: var(--ink-soft); }
+.rule { width: 120px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); }
+
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 18px; }
+.list li { display: grid; grid-template-columns: 34px 1fr; gap: 14px; font-size: 26px; line-height: 1.3; }
+.list li::before { content: "✦"; color: var(--gold); font-size: 22px; line-height: 1.5; }
+.list b { font-family: var(--f-head); font-weight: 600; font-size: 22px; color: var(--gold); display: block; letter-spacing: .03em; }
+.answer { margin: 0; padding: 22px 26px; border-left: 3px solid var(--ice); background: rgba(159, 226, 255, .07); font-size: 27px; line-height: 1.35; }
+.answer strong { color: var(--ice); font-weight: 600; }
+
+.model { position: relative; height: 100%; max-height: 560px; border: 1px solid var(--gold-dim); background: var(--night); overflow: hidden; }
+.model canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+.model .cap { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font-size: 17px; font-style: italic; color: var(--ink-soft); pointer-events: none; }
+.xbtn { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(7, 10, 28, .7); border: 1px solid var(--ice); color: var(--ice);
+  font: 600 16px var(--f-head); letter-spacing: .05em; padding: 8px 16px; cursor: pointer; }
+.xbtn[aria-pressed="true"] { background: var(--ice); color: #06142c; }
+.xbtn:focus-visible, .nav button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.step { background: var(--panel); border: 1px solid var(--gold-dim); padding: 28px 26px; display: flex; flex-direction: column; gap: 12px; }
+.step .n { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #24180a; font: 600 24px var(--f-head); }
+.step h3 { margin: 0; font-family: var(--f-head); font-weight: 600; font-size: 26px; color: var(--gold); }
+.step p { margin: 0; font-size: 23px; line-height: 1.35; }
+.flow { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; font-family: var(--f-head); font-size: 19px; }
+.flow span { padding: 8px 16px; border: 1px solid rgba(159, 226, 255, .45); color: var(--ice); }
+.flow i { font-style: normal; color: var(--gold); }
+
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.col { border-top: 2px solid var(--gold); padding-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.col .ic { font-size: 40px; color: var(--ice); line-height: 1; }
+.col h3 { margin: 0; font-family: var(--f-head); font-weight: 600; font-size: 27px; color: var(--gold); }
+.col p { margin: 0; font-size: 23px; line-height: 1.35; }
+.who { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 23px; }
+.who b { font-family: var(--f-head); font-size: 19px; letter-spacing: .12em; text-transform: uppercase; color: var(--ice); font-weight: 600; margin-right: 6px; }
+.who span { padding: 6px 16px; border: 1px solid var(--gold-dim); border-radius: 999px; }
+
+.build { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--gold-dim); }
+.build div { padding: 24px 24px; display: flex; flex-direction: column; gap: 8px; }
+.build div + div { border-left: 1px solid var(--gold-dim); }
+.build small { font-family: var(--f-head); font-size: 16px; letter-spacing: .14em; color: var(--ice); text-transform: uppercase; }
+.build h3 { margin: 0; font-family: var(--f-head); font-size: 25px; color: var(--gold); font-weight: 600; }
+.build p { margin: 0; font-size: 21px; line-height: 1.35; }
+.thanks { margin-top: auto; display: flex; align-items: baseline; justify-content: space-between; gap: 24px; }
+.thanks h2 { font-size: 64px; }
+
+.num { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 16px; counter-reset: n; }
+.num li { counter-increment: n; display: grid; grid-template-columns: 44px 1fr; gap: 14px; font-size: 24px; line-height: 1.3; }
+.num li::before { content: counter(n); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #24180a; font: 600 20px var(--f-head); }
+.num b { font-family: var(--f-head); font-weight: 600; font-size: 22px; color: var(--gold); display: block; }
+
+.spec { width: 100%; border-collapse: collapse; font-size: 23px; }
+.spec th, .spec td { text-align: left; padding: 11px 0; border-bottom: 1px solid rgba(230, 188, 106, .25); vertical-align: top; }
+.spec th { width: 210px; font-family: var(--f-head); font-weight: 600; font-size: 19px; letter-spacing: .06em; color: var(--gold); padding-top: 14px; }
+.spec td { font-variant-numeric: tabular-nums; }
+
+.points { display: grid; grid-template-columns: repeat(5, 1fr); gap: 22px; }
+.points .col h3 { font-size: 23px; }
+.points .col p { font-size: 21px; }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.two h3 { margin: 0 0 16px; font-family: var(--f-head); font-weight: 600; font-size: 26px; color: var(--ice); letter-spacing: .04em; }
+
+.price { font-family: var(--f-display); font-weight: 700; font-size: 128px; line-height: 1; color: var(--gold); text-shadow: 0 0 26px rgba(230, 188, 106, .35), 0 3px 0 #3e2b0e; font-variant-numeric: tabular-nums; }
+.price small { font-size: 48px; margin-left: 12px; }
+.warranty { display: flex; gap: 18px; flex-wrap: wrap; font-size: 24px; }
+.warranty span { padding: 8px 18px; border: 1px solid var(--gold-dim); }
+.warranty b { color: var(--gold); font-family: var(--f-head); font-weight: 600; font-size: 20px; margin-right: 8px; }
+
+.foot { position: absolute; left: 80px; right: 80px; bottom: 28px; display: flex; justify-content: space-between; font-family: var(--f-head); font-size: 14px; letter-spacing: .14em; color: var(--gold-dim); text-transform: uppercase; pointer-events: none; }
+
+.nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 14px;
+  padding: 8px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.nav button { background: transparent; border: 1px solid var(--gold-dim); color: var(--gold); font: 600 15px var(--f-head); padding: 6px 14px; cursor: pointer; }
+.nav button:hover { background: rgba(230, 188, 106, .1); }
+.nav button:disabled { opacity: .35; cursor: default; }
+.count { font-family: var(--f-head); font-size: 15px; color: var(--ink-soft); font-variant-numeric: tabular-nums; min-width: 56px; text-align: center; }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold-dim); }
+.dots i.on { background: var(--gold); }
+@media (max-width: 600px) { .dots { display: none; } }
+@media (prefers-reduced-motion: reduce) { .slide { transition: none; } }
+</style>
+
+<div class="deck">
+  <div class="stage" id="stage">
+
+    <!-- 1 Title -->
+    <section class="slide active" data-title="Title">
+      <div class="split">
+        <div style="display:flex;flex-direction:column;gap:26px">
+          <div class="eyebrow">Product Design Project</div>
+          <h1>Fountain<br>Bottle</h1>
+          <div class="rule"></div>
+          <p class="tag">A water bottle that never runs out.</p>
+          <p class="lede muted">A portal at the bottom connects it to a glacier in the Elven Mountains.</p>        </div>
+        <div class="model" data-model><div class="cap">Live 3D model · drag to rotate</div></div>
+      </div>
+    </section>
+
+    <!-- 2 Problem -->
+    <section class="slide" data-title="The Problem">
+      <div class="eyebrow">01 · The Problem</div>
+      <h2>Staying hydrated is harder than it should be</h2>
+      <div class="split" style="grid-template-columns:1fr 1fr;align-items:start">
+        <ul class="list">
+          <li><span><b>Heavy to carry</b>Several bottles are heavy and take up space.</span></li>
+          <li><span><b>Nowhere to refill</b>Water is hard to find when hiking, playing sports or travelling.</span></li>
+          <li><span><b>Plastic waste</b>Buying bottled water costs money and creates waste.</span></li>
+        </ul>
+        <p class="answer"><strong>Our answer: Fountain Bottle.</strong> One bottle that refills itself, so you never have to carry extra water or buy another plastic bottle.</p>
+      </div>
+    </section>
+
+    <!-- 3 How it works -->
+    <section class="slide" data-title="How It Works">
+      <div class="split flip">
+        <div class="model" data-model data-xray="1">
+          <button class="xbtn" type="button" aria-pressed="true">✦ X-ray on</button>
+          <div class="cap">X-ray view · the portal at the base</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="eyebrow">02 · How It Works</div>
+          <h2>One portal, endless water</h2>
+          <p style="margin:0;font-size:24px;line-height:1.35">The base of the bottle is a portal to a glacier in the Elven Mountains. Water flows in by itself, so the bottle never runs dry, unless the mountain does.</p>
+          <ol class="num">
+            <li><span><b>Fill once</b>Fill the bottle the first time to activate the portal.</span></li>
+            <li><span><b>Turn the ring</b>Twist the ring at the neck to open it. Water rises by itself.</span></li>
+            <li><span><b>Drink and close</b>Drink as much as you like, then twist the ring to close.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 Specs -->
+    <section class="slide" data-title="Specifications">
+      <div class="split">
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="eyebrow">03 · Specifications</div>
+          <h2>Product details</h2>
+          <table class="spec">
+            <tr><th>Size</th><td>25 cm tall · 12 cm wide</td></tr>
+            <tr><th>Capacity</th><td>750 ml, refills automatically</td></tr>
+            <tr><th>Weight</th><td>About 450 g</td></tr>
+            <tr><th>Body</th><td>Shock-resistant safety stained glass</td></tr>
+            <tr><th>Frame</th><td>Gold-coated aluminium, rust-proof</td></tr>
+            <tr><th>Cap</th><td>Twist ring that opens and locks the portal</td></tr>
+            <tr><th>Water temp.</th><td>About 2–5 °C, straight from the glacier</td></tr>
+          </table>
+        </div>
+        <div class="model" data-model><div class="cap">Drag to see every side</div></div>
+      </div>
+    </section>
+
+    <!-- 5 Selling points -->
+    <section class="slide" data-title="Selling Points">
+      <div class="eyebrow">04 · Selling Points</div>
+      <h2>Why people will love it</h2>
+      <div class="points">
+        <div class="col"><div class="ic">∞</div><h3>Never runs out</h3><p>No more refilling, ever.</p></div>
+        <div class="col"><div class="ic">❄</div><h3>Always cold</h3><p>No ice and no insulated bottle needed.</p></div>
+        <div class="col"><div class="ic">▲</div><h3>Pure mountain water</h3><p>Fresh from a glacier spring.</p></div>
+        <div class="col"><div class="ic">♻</div><h3>Less plastic</h3><p>One bottle replaces hundreds of plastic ones.</p></div>
+        <div class="col"><div class="ic">✦</div><h3>Beautiful design</h3><p>Stained glass worth showing off, or giving as a gift.</p></div>
+      </div>
+    </section>
+
+    <!-- 6 Customers + good to know -->
+    <section class="slide" data-title="Who It's For">
+      <div class="eyebrow">05 · Customers &amp; Care</div>
+      <h2>Who it's for</h2>
+      <div class="two">
+        <div>
+          <h3>Target customers</h3>
+          <ul class="list">
+            <li><span>Students</span></li>
+            <li><span>Athletes and people who work out</span></li>
+            <li><span>Hikers and travellers</span></li>
+            <li><span>Busy workers who forget to drink water</span></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Good to know</h3>
+          <ul class="list">
+            <li><span>If the mountain runs dry, the bottle pauses until it refills.</span></li>
+            <li><span>Water only. No other drinks.</span></li>
+            <li><span>Close the ring after every use.</span></li>
+            <li><span>Hand wash only. Not dishwasher safe.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 Price + thanks -->
+    <section class="slide" data-title="Price">
+      <div class="eyebrow">06 · Price &amp; Warranty</div>
+      <div class="price">1,290<small>THB</small></div>
+      <div class="warranty">
+        <span><b>Bottle</b>1-year warranty</span>
+        <span><b>Portal</b>Lifetime warranty</span>
+      </div>
+      <p class="tag" style="font-size:30px">A water bottle that never runs out.</p>
+      <div class="thanks">
+        <h2>Thank you</h2>
+        <p class="tag" style="font-size:28px">Questions?</p>
+      </div>
+    </section>
+
+    <div class="foot"><span>Fountain Bottle</span><span id="footTitle">Title</span></div>
+  </div>
+
+  <nav class="nav" aria-label="Slides">
+    <button type="button" id="prev">← Prev</button>
+    <div class="dots" id="dots"></div>
+    <span class="count" id="count">1 / 7</span>
+    <button type="button" id="next">Next →</button>
+    <button type="button" id="full">Full screen</button>
+  </nav>
+</div>
+
+<script>
+// Deck navigation and scaling (works even if the 3D model fails to load).
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  let cur = 0;
+  window.deckScale = 1;
+  function fit() {
+    const w = document.body.clientWidth - 32, h = window.innerHeight - 64;
+    const s = Math.max(0.2, Math.min(w / 1280, h / 720));
+    window.deckScale = s;
+    stage.style.transform = `translate(-50%, -50%) scale(${s})`;
+    window.dispatchEvent(new Event('deck-resize'));
+  }
+  function go(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('active', k === cur));
+    [...dots.children].forEach((d, k) => d.classList.toggle('on', k === cur));
+    document.getElementById('count').textContent = `${cur + 1} / ${slides.length}`;
+    document.getElementById('footTitle').textContent = slides[cur].dataset.title;
+    document.getElementById('prev').disabled = cur === 0;
+    document.getElementById('next').disabled = cur === slides.length - 1;
+    window.dispatchEvent(new CustomEvent('deck-slide', { detail: slides[cur] }));
+  }
+  window.deckActive = () => slides[cur];
+  document.getElementById('prev').onclick = () => go(cur - 1);
+  document.getElementById('next').onclick = () => go(cur + 1);
+  document.getElementById('full').onclick = () => {
+    const el = document.documentElement;
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+  };
+  addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End') go(slides.length - 1);
+  });
+  addEventListener('resize', fit);
+  fit(); go(0);
+})();
+</script>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const H = 2.5;
+
+// ---------- procedural textures ----------
+function rng(seed) {
+  return () => {
+    seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const PALETTE = [[225, 25, 40], [255, 118, 12], [255, 200, 40], [40, 165, 60], [20, 170, 215],
+                 [25, 60, 225], [118, 30, 200], [220, 30, 130], [20, 110, 255], [255, 85, 55]];
+
+function stainedTexture(w, h, cell, seed, lead) {
+  const r = rng(seed), gx = w / cell, gy = Math.ceil(h / cell);
+  const px = new Float32Array(gx * gy), py = new Float32Array(gx * gy), col = new Uint8Array(gx * gy);
+  for (let j = 0; j < gy; j++) for (let i = 0; i < gx; i++) {
+    const k = j * gx + i;
+    px[k] = (i + 0.15 + 0.7 * r()) * cell;
+    py[k] = (j + 0.15 + 0.7 * r()) * cell;
+    col[k] = Math.floor(r() * PALETTE.length);
+  }
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'), img = ctx.createImageData(w, h), d = img.data;
+  for (let y = 0; y < h; y++) {
+    const cy = Math.floor(y / cell);
+    for (let x = 0; x < w; x++) {
+      const cx = Math.floor(x / cell);
+      let d1 = 1e9, d2 = 1e9, best = 0;
+      for (let dy = -1; dy <= 1; dy++) {
+        const j = cy + dy; if (j < 0 || j >= gy) continue;
+        for (let dx = -1; dx <= 1; dx++) {
+          let i = cx + dx, off = 0;
+          if (i < 0) { i += gx; off = -w; } else if (i >= gx) { i -= gx; off = w; }
+          const k = j * gx + i, ex = px[k] + off - x, ey = py[k] - y, dd = ex * ex + ey * ey;
+          if (dd < d1) { d2 = d1; d1 = dd; best = k; } else if (dd < d2) d2 = dd;
+        }
+      }
+      const s1 = Math.sqrt(d1), s2 = Math.sqrt(d2), p = (y * w + x) * 4;
+      if (s2 - s1 < lead) { d[p] = 74; d[p + 1] = 54; d[p + 2] = 24; }
+      else {
+        const pc = PALETTE[col[best]];
+        const sh = 1.2 - 0.6 * Math.min(1, s1 / cell);
+        d[p] = Math.min(255, pc[0] * sh); d[p + 1] = Math.min(255, pc[1] * sh); d[p + 2] = Math.min(255, pc[2] * sh);
+      }
+      d[p + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 8;
+  return t;
+}
+
+function marbleTexture() {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 256;
+  const ctx = c.getContext('2d'), r = rng(7);
+  ctx.fillStyle = '#ebe6de'; ctx.fillRect(0, 0, 1024, 256);
+  for (let v = 0; v < 46; v++) {
+    ctx.strokeStyle = `rgba(${80 + r() * 40},${76 + r() * 30},${86 + r() * 30},${0.15 + r() * 0.45})`;
+    ctx.lineWidth = 0.4 + r() * 2.2;
+    ctx.beginPath();
+    let x = r() * 1024, y = r() * 256;
+    ctx.moveTo(x, y);
+    for (let s = 0; s < 18; s++) { x += 10 + r() * 40; y += (r() - 0.5) * 50; ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = THREE.RepeatWrapping;
+  return t;
+}
+
+function runeTexture() {
+  const S = 512, c = document.createElement('canvas'); c.width = c.height = S;
+  const ctx = c.getContext('2d'), r = rng(42), m = S / 2;
+  const g = ctx.createRadialGradient(m, m, 0, m, m, m);
+  g.addColorStop(0, 'rgba(160,230,255,0.95)'); g.addColorStop(0.35, 'rgba(40,140,255,0.55)'); g.addColorStop(1, 'rgba(0,40,120,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, S, S);
+  ctx.strokeStyle = 'rgba(200,245,255,0.95)'; ctx.lineWidth = 3;
+  for (const rad of [0.93, 0.8, 0.52]) { ctx.beginPath(); ctx.arc(m, m, rad * m, 0, Math.PI * 2); ctx.stroke(); }
+  ctx.lineWidth = 2.5;
+  for (let k = 0; k < 28; k++) {
+    const a = (k / 28) * Math.PI * 2, rr = 0.865 * m;
+    ctx.save(); ctx.translate(m + Math.cos(a) * rr, m + Math.sin(a) * rr); ctx.rotate(a + Math.PI / 2);
+    ctx.beginPath();
+    for (let s = 0; s < 3; s++) { ctx.moveTo((r() - 0.5) * 18, (r() - 0.5) * 18); ctx.lineTo((r() - 0.5) * 18, (r() - 0.5) * 18); }
+    ctx.stroke(); ctx.restore();
+  }
+  for (let k = 0; k < 8; k++) {
+    const a = (k / 8) * Math.PI * 2;
+    ctx.beginPath(); ctx.moveTo(m + Math.cos(a) * 0.52 * m, m + Math.sin(a) * 0.52 * m);
+    ctx.lineTo(m + Math.cos(a + Math.PI * 0.75) * 0.52 * m, m + Math.sin(a + Math.PI * 0.75) * 0.52 * m); ctx.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+function glowSprite() {
+  const c = document.createElement('canvas'); c.width = c.height = 64;
+  const ctx = c.getContext('2d'), g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.3, 'rgba(200,240,255,0.8)'); g.addColorStop(1, 'rgba(120,200,255,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+
+// ---------- renderer / scene ----------
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.85;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x070a1c);
+scene.fog = new THREE.Fog(0x070a1c, 12, 26);
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+camera.position.set(0, 1.9, 9.5);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 1.2, 0);
+controls.enableDamping = true;
+controls.enablePan = false;
+controls.minDistance = 4; controls.maxDistance = 14;
+controls.minPolarAngle = 0.6; controls.maxPolarAngle = 1.62;
+controls.autoRotate = !reduceMotion;
+controls.autoRotateSpeed = 0.7;
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.5, 0.4, 0.88);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
+
+// ---------- materials ----------
+const gold = new THREE.MeshStandardMaterial({ color: 0xd9a64e, metalness: 1, roughness: 0.3, emissive: 0x2a1a05, envMapIntensity: 0.8 });
+const starGold = new THREE.MeshStandardMaterial({ color: 0xffc860, metalness: 0.9, roughness: 0.2, emissive: 0xffa630, emissiveIntensity: 1.2, envMapIntensity: 0.8 });
+
+// ---------- bottle ----------
+const PROFILE = [[0.40, 0.0], [0.45, 0.1], [0.54, 0.6], [0.60, 1.15], [0.56, 1.55],
+                 [0.38, 1.9], [0.25, 2.15], [0.26, 2.35], [0.34, 2.5]];
+const curve = new THREE.SplineCurve(PROFILE.map(([r, y]) => new THREE.Vector2(r, y)));
+const pts = curve.getSpacedPoints(90);
+const radiusAt = (y) => { let best = pts[0]; for (const p of pts) if (Math.abs(p.y - y) < Math.abs(best.y - y)) best = p; return best.x; };
+
+const glassTex = stainedTexture(1024, 640, 64, 11, 3.2);
+const glassMat = new THREE.MeshPhysicalMaterial({
+  map: glassTex, emissiveMap: glassTex, emissive: 0xffffff, emissiveIntensity: 0.45,
+  roughness: 0.18, metalness: 0.05, clearcoat: 1, clearcoatRoughness: 0.1, envMapIntensity: 0.5,
+  transparent: true, opacity: 0.94, side: THREE.DoubleSide
+});
+const bottleGroup = new THREE.Group();
+bottleGroup.add(new THREE.Mesh(new THREE.LatheGeometry([new THREE.Vector2(0.001, 0), ...pts], 128), glassMat));
+scene.add(bottleGroup);
+
+const RIBS = 12;
+for (let k = 0; k < RIBS; k++) {
+  const a = (k / RIBS) * Math.PI * 2;
+  const path = new THREE.CatmullRomCurve3(pts.filter((_, i) => i % 3 === 0).concat(pts[pts.length - 1])
+    .map(p => new THREE.Vector3((p.x + 0.018) * Math.cos(a), p.y, (p.x + 0.018) * Math.sin(a))));
+  bottleGroup.add(new THREE.Mesh(new THREE.TubeGeometry(path, 90, 0.016, 6), gold));
+}
+for (const y of [0.04, 0.6, 1.2, 1.75, 2.05, 2.49]) {
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(radiusAt(y) + 0.02, y === 2.05 || y === 2.49 ? 0.03 : 0.02, 10, 128), gold);
+  ring.rotation.x = Math.PI / 2; ring.position.y = y;
+  bottleGroup.add(ring);
+}
+
+function starShape(n = 8, rOut = 0.3, rIn = 0.065) {
+  const s = new THREE.Shape();
+  for (let k = 0; k <= n * 2; k++) {
+    const a = Math.PI / 2 + (k * Math.PI) / n;
+    const rr = k % 2 ? rIn : ((k / 2) % 2 ? rOut * 0.55 : rOut);
+    const x = rr * Math.cos(a), y = rr * Math.sin(a);
+    k === 0 ? s.moveTo(x, y) : s.lineTo(x, y);
+  }
+  return s;
+}
+const star = new THREE.Mesh(new THREE.ExtrudeGeometry(starShape(), { depth: 0.03, bevelEnabled: true, bevelSize: 0.008, bevelThickness: 0.008, bevelSegments: 2 }), starGold);
+star.position.set(0, 1.22, radiusAt(1.22) + 0.03);
+bottleGroup.add(star);
+
+const portal = new THREE.Mesh(new THREE.CircleGeometry(0.37, 64),
+  new THREE.MeshBasicMaterial({ map: runeTexture(), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, color: 0xbfefff }));
+portal.rotation.x = -Math.PI / 2; portal.position.y = 0.05;
+bottleGroup.add(portal);
+const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.04, 2.45, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xd8f6ff }));
+beam.position.y = 1.27; bottleGroup.add(beam);
+const beamGlow = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 2.45, 24, 1, true),
+  new THREE.MeshBasicMaterial({ color: 0x4ab8ff, transparent: true, opacity: 0.22, blending: THREE.AdditiveBlending, depthWrite: false }));
+beamGlow.position.y = 1.27; bottleGroup.add(beamGlow);
+
+// ---------- pedestal / floor / windows ----------
+const marble = new THREE.MeshStandardMaterial({ map: marbleTexture(), color: 0xb8b1a8, roughness: 0.3, metalness: 0.0, envMapIntensity: 0.25, transparent: true });
+const ped = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.06, 0.6, 128), marble);
+ped.position.y = -0.3; scene.add(ped);
+for (const [y, r] of [[0, 1.0], [-0.6, 1.06]]) {
+  const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.032, 10, 128), gold);
+  t.rotation.x = Math.PI / 2; t.position.y = y; scene.add(t);
+}
+const floor = new THREE.Mesh(new THREE.CircleGeometry(30, 64),
+  new THREE.MeshStandardMaterial({ color: 0x120e1a, roughness: 0.55, metalness: 0.1, envMapIntensity: 0.12 }));
+floor.rotation.x = -Math.PI / 2; floor.position.y = -0.6; scene.add(floor);
+
+const winTex = stainedTexture(512, 1024, 48, 99, 4);
+function archShape(w, h) {
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2, 0); s.lineTo(-w / 2, h);
+  s.absarc(0, h, w / 2, Math.PI, 0, true);
+  s.lineTo(w / 2, 0); s.lineTo(-w / 2, 0);
+  return s;
+}
+for (const x of [-5.4, -2.9, 2.9, 5.4]) {
+  const t = winTex.clone(); t.needsUpdate = true; t.repeat.set(1 / 1.8, 1 / 5.8); t.offset.set(x * 0.13, 0);
+  const win = new THREE.Mesh(new THREE.ShapeGeometry(archShape(1.6, 4.4), 24), new THREE.MeshBasicMaterial({ map: t, color: 0xb8b8b8 }));
+  win.position.set(x, 0.4, -7.5); scene.add(win);
+}
+
+// ---------- lights ----------
+scene.add(new THREE.AmbientLight(0x404a80, 0.35));
+const key = new THREE.DirectionalLight(0xffdcae, 1.1); key.position.set(-3, 6, 4); scene.add(key);
+const inner = new THREE.PointLight(0x5cc8ff, 9, 4.5); inner.position.set(0, 0.5, 0); scene.add(inner);
+const spray = new THREE.PointLight(0x9fe2ff, 6, 5); spray.position.set(0, 3.2, 0); scene.add(spray);
+const rimA = new THREE.PointLight(0xff4fa8, 14, 12); rimA.position.set(-4, 3, -4); scene.add(rimA);
+const rimB = new THREE.PointLight(0x3f7bff, 14, 12); rimB.position.set(4, 3, -4); scene.add(rimB);
+
+// ---------- fountain ----------
+const N = 3200, sprite = glowSprite();
+const pos = new Float32Array(N * 3), vel = new Float32Array(N * 3), age = new Float32Array(N), life = new Float32Array(N);
+const gauss = () => (Math.random() + Math.random() + Math.random() - 1.5) / 1.5;
+function spawn(i) {
+  const a = Math.random() * Math.PI * 2, rr = Math.random() * 0.1;
+  pos[i * 3] = Math.cos(a) * rr; pos[i * 3 + 1] = H; pos[i * 3 + 2] = Math.sin(a) * rr;
+  vel[i * 3] = gauss() * 0.75; vel[i * 3 + 1] = 4.0 + Math.random() * 1.3; vel[i * 3 + 2] = gauss() * 0.75;
+  age[i] = 0; life[i] = 1.0 + Math.random() * 0.7;
+}
+for (let i = 0; i < N; i++) { spawn(i); age[i] = -Math.random() * 1.6; pos[i * 3 + 1] = -100; }
+const fGeo = new THREE.BufferGeometry();
+fGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+scene.add(new THREE.Points(fGeo, new THREE.PointsMaterial({
+  map: sprite, size: 0.06, color: 0x8fd4ff, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending
+})));
+
+// ---------- X-ray internals ----------
+const xray = new THREE.Group();
+xray.visible = false;
+scene.add(xray);
+const glowMat = (color, opacity, map) => {
+  const m = new THREE.MeshBasicMaterial({ color, map: map || null, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  m.userData.base = opacity;
+  return m;
+};
+const vortex = [];
+for (let k = 0; k < 7; k++) {
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34 - k * 0.042, 0.009, 8, 96), glowMat(0x7fd8ff, 0.95 - k * 0.08));
+  ring.rotation.x = Math.PI / 2; ring.position.y = 0.04 - k * 0.085;
+  xray.add(ring); vortex.push(ring);
+}
+const tunnel = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.06, 0.58, 48, 1, true), glowMat(0x5ab8ff, 0.55, runeTexture()));
+tunnel.position.y = -0.27; xray.add(tunnel);
+const farSide = new THREE.Mesh(new THREE.CircleGeometry(0.09, 32), glowMat(0xeaf8ff, 1));
+farSide.rotation.x = -Math.PI / 2; farSide.position.y = -0.55; xray.add(farSide);
+const S = 320, sPos = new Float32Array(S * 3), sAng = new Float32Array(S), sY = new Float32Array(S);
+for (let i = 0; i < S; i++) { sAng[i] = Math.random() * Math.PI * 2; sY[i] = Math.random() * 2.3; }
+const sGeo = new THREE.BufferGeometry();
+sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+const spiralMat = new THREE.PointsMaterial({ map: sprite, size: 0.05, color: 0x9fe2ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+spiralMat.userData.base = 0.9;
+xray.add(new THREE.Points(sGeo, spiralMat));
+
+let xrayOn = false, xrayT = 0;
+document.querySelectorAll('.xbtn').forEach(btn => btn.addEventListener('click', () => {
+  xrayOn = !xrayOn;
+  btn.setAttribute('aria-pressed', String(xrayOn));
+  btn.textContent = xrayOn ? '✦ X-ray on' : '✦ X-ray off';
+}));
+
+// ---------- move the one canvas to whichever slide shows the model ----------
+let host = null;
+function size() {
+  if (!host) return;
+  const w = host.offsetWidth, h = host.offsetHeight;
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio * Math.max(0.6, window.deckScale || 1)));
+  renderer.setSize(w, h, false);
+  composer.setPixelRatio(renderer.getPixelRatio());
+  composer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.position.setLength(w / h < 0.95 ? 10.2 : 8.4);
+  camera.updateProjectionMatrix();
+}
+function mount(slide) {
+  host = slide.querySelector('[data-model]');
+  if (!host) return;
+  host.prepend(renderer.domElement);
+  const btn = host.querySelector('.xbtn');
+  xrayOn = host.dataset.xray === '1' && (!btn || btn.getAttribute('aria-pressed') === 'true');
+  if (!host.dataset.xray) xrayT = Math.min(xrayT, 0);
+  size();
+}
+addEventListener('deck-slide', (e) => mount(e.detail));
+addEventListener('deck-resize', size);
+mount(window.deckActive());
+
+// ---------- loop ----------
+const clock = new THREE.Clock();
+function frame() {
+  requestAnimationFrame(frame);
+  const dt = Math.min(clock.getDelta(), 0.033), t = clock.elapsedTime;
+  if (!host) return;
+  for (let i = 0; i < N; i++) {
+    age[i] += dt;
+    if (age[i] < 0) continue;
+    if (age[i] >= life[i] || pos[i * 3 + 1] < 0.02) { spawn(i); continue; }
+    vel[i * 3 + 1] -= 9.8 * dt;
+    pos[i * 3] += vel[i * 3] * dt; pos[i * 3 + 1] += vel[i * 3 + 1] * dt; pos[i * 3 + 2] += vel[i * 3 + 2] * dt;
+  }
+  fGeo.attributes.position.needsUpdate = true;
+  portal.rotation.z = t * 0.4;
+  inner.intensity = 8 + Math.sin(t * 3) * 1.5;
+  beamGlow.material.opacity = 0.2 + Math.sin(t * 5) * 0.04;
+
+  xrayT += ((xrayOn ? 1 : 0) - xrayT) * Math.min(1, dt * 5);
+  glassMat.opacity = 0.94 - 0.8 * xrayT;
+  glassMat.emissiveIntensity = 0.45 - 0.33 * xrayT;
+  glassMat.depthWrite = xrayT < 0.5;
+  marble.opacity = 1 - 0.78 * xrayT;
+  marble.depthWrite = xrayT < 0.5;
+  xray.visible = xrayT > 0.01;
+  if (xray.visible) {
+    xray.traverse(o => { if (o.material && o.material.userData.base !== undefined) o.material.opacity = o.material.userData.base * xrayT; });
+    vortex.forEach((r, k) => { r.rotation.z = t * (1.2 + k * 0.35) * (k % 2 ? -1 : 1); r.scale.setScalar(1 + Math.sin(t * 3 + k) * 0.04); });
+    tunnel.rotation.y = -t * 0.8;
+    for (let i = 0; i < S; i++) {
+      sY[i] += dt * 0.55; sAng[i] += dt * 2.2;
+      if (sY[i] > 2.3) sY[i] = 0.05;
+      const rr = radiusAt(sY[i]) * 0.6;
+      sPos[i * 3] = Math.cos(sAng[i] + sY[i] * 3) * rr; sPos[i * 3 + 1] = sY[i]; sPos[i * 3 + 2] = Math.sin(sAng[i] + sY[i] * 3) * rr;
+    }
+    sGeo.attributes.position.needsUpdate = true;
+  }
+  controls.update();
+  composer.render();
+}
+frame();
+</script>
+</body></html>
