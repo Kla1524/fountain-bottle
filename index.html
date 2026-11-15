@@ -43,7 +43,7 @@ h1, h2 { margin: 0; font-family: var(--f-display); font-weight: 700; color: var(
 h1 { font-size: 96px; line-height: .95; }
 h2 { font-size: 54px; line-height: 1.05; }
 .lede { margin: 0; font-size: 30px; line-height: 1.3; color: var(--ink); max-width: 30ch; }
-.tag { margin: 0; font-family: var(--f-head); font-size: 30px; color: var(--ink); font-style: normal; }
+.tag { margin: 0; font-family: var(--f-head); font-size: 30px; color: var(--ice); font-style: normal; }
 .muted { color: var(--ink-soft); }
 .rule { width: 120px; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); }
 
@@ -112,6 +112,27 @@ h2 { font-size: 54px; line-height: 1.05; }
 .warranty span { padding: 8px 18px; border: 1px solid var(--gold-dim); }
 .warranty b { color: var(--gold); font-family: var(--f-head); font-weight: 600; font-size: 20px; margin-right: 8px; }
 
+/* titles-only lists (no white body text) */
+.list.big { gap: 26px; }
+.list.big li { font-size: 30px; }
+.list.big b { font-size: 30px; }
+.list.big li::before { font-size: 26px; line-height: 1.2; }
+.num.big { gap: 24px; }
+.num.big b { font-size: 30px; line-height: 40px; }
+.spec td { color: var(--ice); }
+.warranty span { color: var(--ice); }
+
+/* slide 5: selling points around the model */
+.orbit { flex: 1; display: grid; grid-template-columns: 1fr 400px 1fr; gap: 40px; align-items: center; min-height: 0; }
+.orbit .side { display: flex; flex-direction: column; gap: 30px; }
+.orbit .side.r { text-align: left; }
+.orbit .side.l { text-align: right; }
+.pt { display: flex; align-items: center; gap: 18px; }
+.side.l .pt { flex-direction: row-reverse; }
+.pt .ic { flex: none; width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--gold-dim); display: grid; place-items: center; font-size: 30px; color: var(--ice); background: rgba(159, 226, 255, .06); }
+.pt h3 { margin: 0; font-family: var(--f-head); font-weight: 600; font-size: 28px; line-height: 1.2; color: var(--gold); }
+.orbit .model { height: 100%; max-height: 520px; }
+
 .foot { position: absolute; left: 80px; right: 80px; bottom: 28px; display: flex; justify-content: space-between; font-family: var(--f-head); font-size: 14px; letter-spacing: .14em; color: var(--gold-dim); text-transform: uppercase; pointer-events: none; }
 
 .nav { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 14px;
@@ -137,8 +158,7 @@ h2 { font-size: 54px; line-height: 1.05; }
           <div class="eyebrow">Product Design Project</div>
           <h1>Fountain<br>Bottle</h1>
           <div class="rule"></div>
-          <p class="tag">A water bottle that never runs out.</p>
-          <p class="lede muted">A portal at the bottom connects it to a glacier in the Elven Mountains.</p>        </div>
+          <p class="tag">A water bottle that never runs out.</p>        </div>
         <div class="model" data-model><div class="cap">Live 3D model · drag to rotate</div></div>
       </div>
     </section>
@@ -148,12 +168,12 @@ h2 { font-size: 54px; line-height: 1.05; }
       <div class="eyebrow">01 · The Problem</div>
       <h2>Staying hydrated is harder than it should be</h2>
       <div class="split" style="grid-template-columns:1fr 1fr;align-items:start">
-        <ul class="list">
-          <li><span><b>Heavy to carry</b>Several bottles are heavy and take up space.</span></li>
-          <li><span><b>Nowhere to refill</b>Water is hard to find when hiking, playing sports or travelling.</span></li>
-          <li><span><b>Plastic waste</b>Buying bottled water costs money and creates waste.</span></li>
+        <ul class="list big">
+          <li><span><b>Heavy to carry</b></span></li>
+          <li><span><b>Nowhere to refill</b></span></li>
+          <li><span><b>Plastic waste</b></span></li>
         </ul>
-        <p class="answer"><strong>Our answer: Fountain Bottle.</strong> One bottle that refills itself, so you never have to carry extra water or buy another plastic bottle.</p>
+        <p class="answer"><strong>Our answer: Fountain Bottle</strong></p>
       </div>
     </section>
 
@@ -167,11 +187,11 @@ h2 { font-size: 54px; line-height: 1.05; }
         <div style="display:flex;flex-direction:column;gap:20px">
           <div class="eyebrow">02 · How It Works</div>
           <h2>One portal, endless water</h2>
-          <p style="margin:0;font-size:24px;line-height:1.35">The base of the bottle is a portal to a glacier in the Elven Mountains. Water flows in by itself, so the bottle never runs dry, unless the mountain does.</p>
-          <ol class="num">
-            <li><span><b>Fill once</b>Fill the bottle the first time to activate the portal.</span></li>
-            <li><span><b>Turn the ring</b>Twist the ring at the neck to open it. Water rises by itself.</span></li>
-            <li><span><b>Drink and close</b>Drink as much as you like, then twist the ring to close.</span></li>
+          <p class="tag" style="font-size:26px">Portal at the base → glacier in the Elven Mountains</p>
+          <ol class="num big">
+            <li><span><b>Fill once</b></span></li>
+            <li><span><b>Turn the ring</b></span></li>
+            <li><span><b>Drink and close</b></span></li>
           </ol>
         </div>
       </div>
@@ -201,12 +221,18 @@ h2 { font-size: 54px; line-height: 1.05; }
     <section class="slide" data-title="Selling Points">
       <div class="eyebrow">04 · Selling Points</div>
       <h2>Why people will love it</h2>
-      <div class="points">
-        <div class="col"><div class="ic">∞</div><h3>Never runs out</h3><p>No more refilling, ever.</p></div>
-        <div class="col"><div class="ic">❄</div><h3>Always cold</h3><p>No ice and no insulated bottle needed.</p></div>
-        <div class="col"><div class="ic">▲</div><h3>Pure mountain water</h3><p>Fresh from a glacier spring.</p></div>
-        <div class="col"><div class="ic">♻</div><h3>Less plastic</h3><p>One bottle replaces hundreds of plastic ones.</p></div>
-        <div class="col"><div class="ic">✦</div><h3>Beautiful design</h3><p>Stained glass worth showing off, or giving as a gift.</p></div>
+      <div class="orbit">
+        <div class="side l">
+          <div class="pt"><div class="ic">∞</div><h3>Never runs out</h3></div>
+          <div class="pt"><div class="ic">❄</div><h3>Always cold</h3></div>
+          <div class="pt"><div class="ic">▲</div><h3>Pure mountain water</h3></div>
+        </div>
+        <div class="model" data-model><div class="cap">Drag to rotate</div></div>
+        <div class="side r">
+          <div class="pt"><div class="ic">♻</div><h3>Less plastic</h3></div>
+          <div class="pt"><div class="ic">✦</div><h3>Beautiful design</h3></div>
+          <div class="pt"><div class="ic">♥</div><h3>Great as a gift</h3></div>
+        </div>
       </div>
     </section>
 
@@ -217,20 +243,20 @@ h2 { font-size: 54px; line-height: 1.05; }
       <div class="two">
         <div>
           <h3>Target customers</h3>
-          <ul class="list">
-            <li><span>Students</span></li>
-            <li><span>Athletes and people who work out</span></li>
-            <li><span>Hikers and travellers</span></li>
-            <li><span>Busy workers who forget to drink water</span></li>
+          <ul class="list big">
+            <li><span><b>Students</b></span></li>
+            <li><span><b>Athletes</b></span></li>
+            <li><span><b>Hikers &amp; travellers</b></span></li>
+            <li><span><b>Busy workers</b></span></li>
           </ul>
         </div>
         <div>
           <h3>Good to know</h3>
-          <ul class="list">
-            <li><span>If the mountain runs dry, the bottle pauses until it refills.</span></li>
-            <li><span>Water only. No other drinks.</span></li>
-            <li><span>Close the ring after every use.</span></li>
-            <li><span>Hand wash only. Not dishwasher safe.</span></li>
+          <ul class="list big">
+            <li><span><b>Water only</b></span></li>
+            <li><span><b>Close after use</b></span></li>
+            <li><span><b>Hand wash only</b></span></li>
+            <li><span><b>Pauses if the mountain runs dry</b></span></li>
           </ul>
         </div>
       </div>
