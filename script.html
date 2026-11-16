@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fountain Bottle Script</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Sarabun:wght@400;600&display=swap">
+<style>
+/* Reading layout: one narrow column, a sticky speaker bar, each speaker's part in its own colour. Dark, matching the slides. */
+:root {
+  --night: #070a1c;
+  --panel: #0d1438;
+  --gold: #e6bc6a;
+  --ink: #f4ecd9;
+  --soft: #b9b3a6;
+  --ice: #9fe2ff;
+  --line: rgba(230, 188, 106, .25);
+  --kla: #ffb36b;
+  --gon: #8fd4ff;
+  --fim: #f59ad0;
+  --turbo: #9be59b;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--night); color: var(--ink); font: 500 19px/1.55 "Cormorant Garamond", Georgia, serif;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2 { font-family: "Cinzel", Georgia, serif; color: var(--gold); font-weight: 600; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 6vw, 40px); }
+.sub { margin: 6px 0 0; color: var(--soft); font-family: "Sarabun", sans-serif; font-size: 15px; }
+.links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.links a { color: var(--ice); font: 600 14px "Sarabun", sans-serif; text-decoration: none; border: 1px solid rgba(159, 226, 255, .4); padding: 5px 12px; border-radius: 999px; }
+.links a:hover { background: rgba(159, 226, 255, .1); }
+
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(7, 10, 28, .94); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--line); margin: 22px 0 8px; padding: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--night); z-index: 10; }
+.bar a { font: 600 14px "Sarabun", sans-serif; text-decoration: none; padding: 5px 12px; border-radius: 999px; color: #10131f; }
+.bar label { margin-left: auto; font: 400 14px "Sarabun", sans-serif; color: var(--soft); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.k { background: var(--kla); } .g { background: var(--gon); } .f { background: var(--fim); } .t { background: var(--turbo); }
+
+table { width: 100%; border-collapse: collapse; font: 400 15px "Sarabun", sans-serif; margin: 14px 0 6px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+th { color: var(--soft); font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+
+section.part { margin-top: 34px; padding-left: 16px; border-left: 3px solid var(--c); scroll-margin-top: 64px; }
+section.part h2 { font-size: 24px; color: var(--c); }
+.meta { font: 400 14px "Sarabun", sans-serif; color: var(--soft); margin: 2px 0 10px; }
+.slide { display: inline-block; margin: 18px 0 6px; font: 600 13px "Sarabun", sans-serif; letter-spacing: .06em; color: var(--gold); text-transform: uppercase; }
+.cue { margin: 14px 0 4px; padding: 8px 12px; background: var(--panel); border-radius: 8px; font: 600 15px "Sarabun", sans-serif; color: var(--ice); }
+p.en { margin: 0 0 8px; }
+p.en b { color: var(--gold); font-weight: 600; }
+.act { font: italic 400 15px "Sarabun", sans-serif; color: var(--ice); }
+p.th { margin: 4px 0 10px; font: 400 15px/1.65 "Sarabun", sans-serif; color: var(--soft); }
+body.no-th p.th, body.no-th .qa .th { display: none; }
+
+.qa { margin-top: 40px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.qa h2 { font-size: 22px; margin-bottom: 8px; }
+.qa li { margin-bottom: 12px; }
+.qa .who { font: 600 14px "Sarabun", sans-serif; padding: 1px 8px; border-radius: 999px; color: #10131f; margin-left: 4px; }
+.qa .th { display: block; }
+a:focus-visible, input:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Fountain Bottle · Script</h1>
+  <p class="sub">บทพูดนำเสนอ 4 คน · ภาษาอังกฤษ · ประมาณ 11 นาที (ไม่รวมถามตอบ)</p>
+  <div class="links">
+    <a href="./">เปิดสไลด์</a>
+    <a href="bottle.html">ขวด 3 มิติ + X-ray</a>
+  </div>
+
+  <nav class="bar" aria-label="Speakers">
+    <a class="k" href="#kla">กล้า</a>
+    <a class="g" href="#gon">กอน</a>
+    <a class="f" href="#fim">ฟิม</a>
+    <a class="t" href="#turbo">เทอโบ</a>
+    <label for="showTh"><input type="checkbox" id="showTh" checked> แสดงคำแปลไทย</label>
+  </nav>
+
+  <div class="tablewrap">
+    <table>
+      <tr><th>ลำดับ</th><th>คนพูด</th><th>สไลด์</th><th>เวลา</th></tr>
+      <tr><td>1</td><td>กล้า</td><td>1–2</td><td>0:00 – 2:05</td></tr>
+      <tr><td>2</td><td>กอน</td><td>3</td><td>2:05 – 4:50</td></tr>
+      <tr><td>3</td><td>ฟิม</td><td>4–5</td><td>4:50 – 7:35</td></tr>
+      <tr><td>4</td><td>เทอโบ</td><td>6–7 + สรุป</td><td>7:35 – 11:20</td></tr>
+      <tr><td>5</td><td>ทุกคน</td><td>7</td><td>"Thank you!" + ถามตอบ</td></tr>
+    </table>
+  </div>
+
+  <!-- KLA -->
+  <section class="part" id="kla" style="--c: var(--kla)">
+    <h2>① กล้า</h2>
+    <div class="meta">สไลด์ 1 → 2 · ประมาณ 2 นาที</div>
+
+    <span class="slide">Slide 1 · Title</span>
+    <p class="en">Good morning, teacher and everyone. I'm Kla, and this is Gon, Fim and Turbo.</p>
+    <p class="en">Today we present the <b>Fountain Bottle</b>: a water bottle that <b>never runs out</b>.</p>
+    <p class="en">Let's start with the problem.</p>
+    <p class="th">สวัสดีครับอาจารย์และทุกคน ผมกล้า นี่คือกอน ฟิม และเทอโบ วันนี้เราขอนำเสนอ Fountain Bottle ขวดน้ำที่น้ำไม่มีวันหมด เริ่มจากปัญหากันก่อนครับ</p>
+
+    <div class="cue">🎬 กล้ากดเปลี่ยนเป็นสไลด์ 2</div>
+    <span class="slide">Slide 2 · The Problem</span>
+    <p class="en">Everybody knows that water is important. We should drink water many times a day. But in real life, it's not always easy.</p>
+    <p class="en"><b>The first problem is weight.</b> Water is heavy. One litre of water weighs one kilogram. If you go hiking for a whole day, or you have a long football practice, you need two or three bottles. Your bag becomes very heavy.</p>
+    <p class="en"><b>The second problem is refilling.</b> When you are on a mountain, at the beach, or on a long trip, there is often nowhere to refill your bottle.</p>
+    <p class="en"><b>The third problem is plastic waste.</b> Many people buy bottled water instead. But every bottle costs money, and every bottle becomes waste.</p>
+    <p class="en">So our team asked one simple question: <i>What if you only needed one bottle, and it could refill itself, forever?</i></p>
+    <p class="en">Our answer is the Fountain Bottle. Now, Gon will show you how it works.</p>
+    <p class="th">ทุกคนรู้ว่าน้ำสำคัญ เราควรดื่มน้ำหลายครั้งต่อวัน แต่ในชีวิตจริงไม่ง่ายเสมอไป ปัญหาแรกคือน้ำหนัก น้ำ 1 ลิตรหนัก 1 กิโลกรัม ถ้าเดินป่าทั้งวันหรือซ้อมฟุตบอลนานๆ ต้องพก 2–3 ขวด กระเป๋าหนักมาก ปัญหาที่สองคือหาที่เติมน้ำ บนภูเขา ทะเล หรือตอนเดินทางไกล มักไม่มีที่เติม ปัญหาที่สามคือขยะพลาสติก หลายคนซื้อน้ำขวดแทน แต่ทุกขวดเสียเงินและกลายเป็นขยะ ทีมเราเลยถามว่า ถ้าใช้แค่ขวดเดียวแล้วมันเติมน้ำเองได้ตลอดไปล่ะ คำตอบของเราคือ Fountain Bottle ต่อไปกอนจะอธิบายว่ามันทำงานยังไงครับ</p>
+  </section>
+
+  <!-- GON -->
+  <section class="part" id="gon" style="--c: var(--gon)">
+    <h2>② กอน</h2>
+    <div class="meta">สไลด์ 3 · ประมาณ 2:45 นาที · สาธิตปุ่ม X-ray</div>
+
+    <div class="cue">🎬 กอนกดเปลี่ยนเป็นสไลด์ 3</div>
+    <span class="slide">Slide 3 · How It Works</span>
+    <p class="en">Thank you, Kla. Hello everyone, I'm Gon. I'll explain the most important part of our product: how it works.</p>
+    <p class="en">On this slide, you can see the bottle in <b>X-ray view</b>. The bottle becomes clear, so we can look inside.</p>
+    <p class="en"><span class="act">(ชี้ที่ก้นขวด)</span> Please look at the bottom of the bottle. Can you see the blue rings? This is <b>the portal</b>. It is the secret of the Fountain Bottle.</p>
+    <p class="en">On the other side of this portal, there is a <b>glacier</b>, high up in the Elven Mountains. A glacier is a huge river of ice. Every day, the sun melts a little of the ice, and this cold, clean water flows through the portal and into your bottle.</p>
+    <p class="en">Because the glacier is very high, the water comes in with pressure, so it rises up through the bottle like a small fountain. That's where the name "Fountain Bottle" comes from.</p>
+    <p class="en">Using the bottle is very easy. There are only three steps.</p>
+    <p class="en"><b>Step one: fill once.</b> When you buy the bottle, you fill it with water one time. This activates the portal.</p>
+    <p class="en"><b>Step two: turn the ring.</b> At the neck of the bottle there is a gold ring. When you twist it, the portal opens, and the water rises by itself.</p>
+    <p class="en"><b>Step three: drink and close.</b> Drink as much as you want. When you finish, twist the ring back to close the portal. If you forget, the water will keep coming!</p>
+    <p class="en"><span class="act">(กดปุ่ม X-ray off)</span> Now I'll turn off X-ray mode. From the outside, it looks like a normal bottle. Nobody knows there is a portal inside. <span class="act">(กดปุ่ม X-ray on อีกครั้ง)</span></p>
+    <p class="en">There is only one limit. The bottle never runs out, <b>unless the mountain runs out of water</b>. But a glacier is enormous, so that almost never happens.</p>
+    <p class="en">Next, Fim will tell you what the bottle is made of.</p>
+    <p class="th">ขอบคุณครับกล้า สวัสดีครับ ผมกอน จะอธิบายส่วนที่สำคัญที่สุดคือวิธีการทำงาน สไลด์นี้เป็นมุมมอง X-ray ขวดจะใส ทำให้เห็นข้างใน ดูที่ก้นขวดครับ เห็นวงแหวนสีฟ้าไหม นี่คือประตูมิติ ความลับของขวดนี้ อีกฝั่งของประตูคือธารน้ำแข็งบนขุนเขาเอลฟ์ ซึ่งเป็นแม่น้ำน้ำแข็งขนาดใหญ่ ทุกวันแดดจะละลายน้ำแข็งนิดหน่อย น้ำเย็นสะอาดจึงไหลผ่านประตูเข้ามาในขวด เพราะธารน้ำแข็งอยู่สูง น้ำจึงมีแรงดันและพุ่งขึ้นมาเหมือนน้ำพุ เป็นที่มาของชื่อ Fountain Bottle วิธีใช้มี 3 ขั้นตอน หนึ่ง เติมน้ำครั้งแรกเพื่อเปิดใช้งานประตูมิติ สอง หมุนวงแหวนทองที่คอขวด ประตูจะเปิดและน้ำจะขึ้นมาเอง สาม ดื่มได้เท่าที่ต้องการ แล้วหมุนกลับเพื่อปิด ถ้าลืมปิด น้ำจะไหลไม่หยุด ทีนี้ผมจะปิด X-ray จากข้างนอกดูเหมือนขวดธรรมดา ไม่มีใครรู้ว่ามีประตูมิติอยู่ข้างใน ข้อจำกัดมีอย่างเดียว คือน้ำจะหมดก็ต่อเมื่อน้ำบนภูเขาหมด แต่ธารน้ำแข็งใหญ่มาก เรื่องนี้แทบไม่เกิดขึ้น ต่อไปฟิมจะเล่าว่าขวดทำจากอะไรครับ</p>
+  </section>
+
+  <!-- FIM -->
+  <section class="part" id="fim" style="--c: var(--fim)">
+    <h2>③ ฟิม</h2>
+    <div class="meta">สไลด์ 4 → 5 · ประมาณ 2:45 นาที</div>
+
+    <div class="cue">🎬 ฟิมกดเปลี่ยนเป็นสไลด์ 4</div>
+    <span class="slide">Slide 4 · Specifications</span>
+    <p class="en">Thank you, Gon. Hi everyone, I'm Fim. Now let's look at the product details.</p>
+    <p class="en">The Fountain Bottle is <b>25 centimetres tall and 12 centimetres wide</b>. That's about the size of a normal sports bottle, so it fits in your bag.</p>
+    <p class="en">It holds <b>750 millilitres</b> of water. But remember, you never need to refill it, because the portal refills it automatically.</p>
+    <p class="en">When we first designed the bottle, we used real glass. But we found two problems: glass is heavy, and it can break easily.</p>
+    <p class="en">So we changed the material. The body is now made of <b>Tritan plastic</b>. Tritan is a safe plastic used in many sports bottles. It is <b>BPA-free</b>, so it's safe for your health, and it is <b>shatterproof</b>, so it won't break if you drop it. We printed the stained-glass pattern on it, so it still looks beautiful.</p>
+    <p class="en">Because of this, the bottle weighs only about <b>250 grams</b>. That's lighter than a smartphone and a power bank together.</p>
+    <p class="en">The frame is <b>gold-coated aluminium</b>, so it is strong, light, and it will not rust. And the water inside is always <b>between two and five degrees</b>, because it comes straight from the glacier.</p>
+    <p class="th">ขอบคุณค่ะกอน สวัสดีค่ะ ฟิมนะคะ มาดูรายละเอียดสินค้ากัน ขวดสูง 25 ซม. กว้าง 12 ซม. ขนาดพอๆ กับขวดน้ำกีฬา ใส่กระเป๋าได้ จุ 750 มล. แต่ไม่ต้องเติมเลย เพราะประตูมิติเติมให้อัตโนมัติ ตอนแรกเราออกแบบเป็นกระจกจริง แต่เจอปัญหา 2 อย่าง คือหนักและแตกง่าย เราจึงเปลี่ยนวัสดุ ตัวขวดตอนนี้ทำจากพลาสติก Tritan ซึ่งเป็นพลาสติกปลอดภัยที่ขวดน้ำกีฬาหลายยี่ห้อใช้ ไม่มีสาร BPA และไม่แตกแม้ทำตก เราพิมพ์ลายกระจกสีไว้ จึงยังสวยเหมือนเดิม ขวดจึงหนักแค่ประมาณ 250 กรัม เบากว่าโทรศัพท์รวมกับพาวเวอร์แบงก์ โครงเป็นอะลูมิเนียมเคลือบทอง แข็งแรง เบา ไม่เป็นสนิม และน้ำข้างในเย็น 2–5 องศาเสมอ เพราะมาจากธารน้ำแข็งโดยตรงค่ะ</p>
+
+    <div class="cue">🎬 ฟิมกดเปลี่ยนเป็นสไลด์ 5</div>
+    <span class="slide">Slide 5 · Selling Points</span>
+    <p class="en">So, why will people love it? We have <b>six reasons</b>.</p>
+    <p class="en"><b>One</b>, it never runs out. <b>Two</b>, it is always cold, so you don't need ice.</p>
+    <p class="en"><b>Three</b>, it is pure mountain water. <b>Four</b>, it means less plastic. One Fountain Bottle can replace hundreds of plastic bottles every year.</p>
+    <p class="en"><b>Five</b>, it has a beautiful design. People will ask you, "Where did you buy that?"</p>
+    <p class="en">And <b>six</b>, it makes a great gift for birthdays or New Year.</p>
+    <p class="en">Now Turbo will tell you who this bottle is for, and how much it costs.</p>
+    <p class="th">แล้วทำไมคนจะชอบ เรามี 6 เหตุผล หนึ่ง น้ำไม่มีวันหมด สอง เย็นตลอด ไม่ต้องใส่น้ำแข็ง สาม เป็นน้ำบริสุทธิ์จากภูเขา สี่ ลดพลาสติก ขวดเดียวแทนขวดพลาสติกได้หลายร้อยขวดต่อปี ห้า ดีไซน์สวย คนจะถามว่าซื้อที่ไหน หก เหมาะเป็นของขวัญวันเกิดหรือปีใหม่ ต่อไปเทอโบจะบอกว่าขวดนี้เหมาะกับใครและราคาเท่าไรค่ะ</p>
+  </section>
+
+  <!-- TURBO -->
+  <section class="part" id="turbo" style="--c: var(--turbo)">
+    <h2>④ เทอโบ</h2>
+    <div class="meta">สไลด์ 6 → 7 + สรุป · ประมาณ 3:45 นาที</div>
+
+    <div class="cue">🎬 เทอโบกดเปลี่ยนเป็นสไลด์ 6</div>
+    <span class="slide">Slide 6 · Who It's For</span>
+    <p class="en">Thank you, Fim. Hello everyone, I'm Turbo. I'll talk about our customers and the price.</p>
+    <p class="en">Our first group is <b>students</b>. Students are busy all day at school, and they often forget to drink water. With the Fountain Bottle, they always have cold water on their desk.</p>
+    <p class="en">Our second group is <b>athletes</b>. When you play sports, you lose a lot of water through sweat. The Fountain Bottle gives you endless water during the whole game.</p>
+    <p class="en">Our third group is <b>hikers and travellers</b>. In the mountains or on a long trip, there are no shops. With this bottle, you never have to carry extra water.</p>
+    <p class="en">And our last group is <b>busy workers</b>: people who sit at a desk all day and never have time to buy water.</p>
+    <p class="en">There are also a few things you should know. Please put <b>only water</b> in the bottle, no juice or soda. Always <b>close the ring</b> after you drink. <b>Wash it by hand</b>, not in the dishwasher. And if the mountain ever runs dry, the bottle will <b>pause</b> until the glacier fills up again.</p>
+    <p class="th">ขอบคุณครับฟิม สวัสดีครับ ผมเทอโบ จะพูดเรื่องกลุ่มลูกค้าและราคา กลุ่มแรกคือนักเรียน ยุ่งทั้งวันและมักลืมดื่มน้ำ มีขวดนี้ก็มีน้ำเย็นบนโต๊ะเสมอ กลุ่มที่สองคือนักกีฬา เสียเหงื่อเยอะ ขวดนี้ให้น้ำไม่จำกัดตลอดเกม กลุ่มที่สามคือนักเดินป่าและนักเดินทาง บนภูเขาหรือระหว่างเดินทางไม่มีร้านค้า มีขวดนี้ก็ไม่ต้องพกน้ำเพิ่ม กลุ่มสุดท้ายคือคนทำงานที่นั่งโต๊ะทั้งวันจนไม่มีเวลาซื้อน้ำ ข้อควรรู้มีนิดหน่อย ใส่แค่น้ำเปล่า ห้ามใส่น้ำผลไม้หรือน้ำอัดลม ปิดวงแหวนทุกครั้งหลังดื่ม ล้างด้วยมือ ห้ามเข้าเครื่องล้างจาน และถ้าน้ำบนภูเขาหมด ขวดจะหยุดชั่วคราวจนธารน้ำแข็งมีน้ำอีกครั้ง</p>
+
+    <div class="cue">🎬 เทอโบกดเปลี่ยนเป็นสไลด์ 7</div>
+    <span class="slide">Slide 7 · Price</span>
+    <p class="en">And now, the most important question: how much is it? The Fountain Bottle costs only <b>1,290 baht</b>.</p>
+    <p class="en">That may sound expensive for a water bottle, but think about it. If you buy one bottle of water every day for ten baht, you spend more than <b>three thousand baht a year</b>. So the Fountain Bottle pays for itself in about <b>four months</b>.</p>
+    <p class="en">We also give you a <b>one-year warranty</b> on the bottle and a <b>lifetime warranty</b> on the portal.</p>
+    <p class="th">และคำถามที่สำคัญที่สุด ราคาเท่าไร Fountain Bottle ราคาแค่ 1,290 บาท อาจฟังดูแพง แต่ถ้าซื้อน้ำวันละขวด ขวดละ 10 บาท หนึ่งปีจะเสียมากกว่า 3,000 บาท ขวดนี้จึงคุ้มทุนในประมาณ 4 เดือน เรารับประกันตัวขวด 1 ปี และรับประกันประตูมิติตลอดอายุการใช้งาน</p>
+
+    <span class="slide">Slide 7 · Summary</span>
+    <p class="en">So, let's quickly sum up what we showed you today.</p>
+    <p class="en"><b>First, the problem.</b> Water is heavy, it's hard to refill, and plastic bottles create waste.</p>
+    <p class="en"><b>Second, our solution.</b> The Fountain Bottle has a portal at the bottom that connects to a glacier in the Elven Mountains, so the water never runs out.</p>
+    <p class="en"><b>Third, the product.</b> It is light, only 250 grams, made of shatterproof plastic, and the water is always ice-cold.</p>
+    <p class="en"><b>And finally, the price.</b> Only 1,290 baht, and it pays for itself in about four months.</p>
+    <p class="en">We believe everyone should have clean, cold water, anytime and anywhere.</p>
+    <p class="en"><b>One bottle. One portal. Water that never runs out.</b></p>
+    <p class="en">On behalf of our team, thank you very much for listening. Do you have any questions?</p>
+    <p class="th">ขอสรุปสั้นๆ หนึ่ง ปัญหา น้ำหนัก หาที่เติมยาก และขยะพลาสติก สอง ทางแก้ ประตูมิติที่ก้นขวดเชื่อมกับธารน้ำแข็ง น้ำจึงไม่มีวันหมด สาม ตัวสินค้า เบาแค่ 250 กรัม ไม่แตก น้ำเย็นเฉียบ และสุดท้าย ราคา 1,290 บาท คุ้มทุนใน 4 เดือน เราเชื่อว่าทุกคนควรได้ดื่มน้ำสะอาดและเย็น ทุกที่ทุกเวลา ขวดเดียว ประตูเดียว น้ำไม่มีวันหมด ในนามของทีม ขอบคุณมากครับที่รับฟัง มีคำถามไหมครับ</p>
+
+    <div class="cue">👥 ทั้ง 4 คนพูดพร้อมกันว่า "Thank you!"</div>
+  </section>
+
+  <div class="qa">
+    <h2>Q&amp;A · ใครตอบคำถามไหน</h2>
+    <ul>
+      <li><b>What if the mountain runs out of water?</b> <span class="who g">กอน</span><br>
+        <i>The bottle pauses until the glacier refills, usually after the winter snow.</i>
+        <span class="th">ขวดจะหยุดชั่วคราวจนธารน้ำแข็งมีน้ำอีกครั้ง ปกติหลังหิมะฤดูหนาว</span></li>
+      <li><b>Why did you change from glass to plastic?</b> <span class="who f">ฟิม</span><br>
+        <i>Glass was too heavy and could break. Tritan is light, safe and shatterproof.</i>
+        <span class="th">กระจกหนักและแตกได้ Tritan เบา ปลอดภัย และไม่แตก</span></li>
+      <li><b>Can you put other drinks in it?</b> <span class="who t">เทอโบ</span><br>
+        <i>No, because the portal could carry it back to the glacier.</i>
+        <span class="th">ไม่ได้ เพราะประตูมิติอาจพามันกลับไปที่ธารน้ำแข็ง</span></li>
+      <li><b>Why is it so cheap for a magic bottle?</b> <span class="who k">กล้า</span><br>
+        <i>We want everyone to have clean water, not only rich people.</i>
+        <span class="th">เราอยากให้ทุกคนได้ดื่มน้ำสะอาด ไม่ใช่แค่คนรวย</span></li>
+    </ul>
+  </div>
+</div>
+<script>
+  const box = document.getElementById('showTh');
+  const apply = () => document.body.classList.toggle('no-th', !box.checked);
+  try { const s = localStorage.getItem('fb-show-th'); if (s !== null) box.checked = s === '1'; } catch (e) {}
+  apply();
+  box.addEventListener('change', () => { apply(); try { localStorage.setItem('fb-show-th', box.checked ? '1' : '0'); } catch (e) {} });
+</script>
+</body>
+</html>
